@@ -38,6 +38,7 @@ The parameters for the script are:
 - Security token
 - Date, any legal value you can feed to the "date" command
 - Norwegian area, like Oslo/Bergen/Trondheim/Tromsø/Kristiansand
+- Output file for plot (if omitted, no plot is generated)
 
 The usage pattern is a crontab like this (NB, prices are updated at 14:00):
 

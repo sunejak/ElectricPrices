@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 if [ -z "$1" ]; then
-  echo "Provide a security token and an area in Norway"
+  echo "Provide a security token, a date, an area in Norway and a plot output file"
   exit 1
 fi
 
