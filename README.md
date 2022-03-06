@@ -16,7 +16,7 @@ https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api
 This project shows how you can let your home automation decide what to do when the electric price is high or low.
 And also how to plot a daily diagram as well, like this:
 
-![price pr hour](/home/ttjsun/2022/ElectricPrices/src/main/sh/plot.png)
+![price pr hour](https://raw.githubusercontent.com/sunejak/ElectricPrices/main/src/main/sh/plot.png)
 
 The data returned from the API is in XML, and to do fun stuff with it, the data is converted to a JSON data structure.
 
