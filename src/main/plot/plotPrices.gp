@@ -1,13 +1,13 @@
 #!/usr/local/bin/gnuplot --persist
 
-set print "-"
-print "script name        : ", ARG0
-print "first argument     : ", ARG1
-print "second argument    : ", ARG2
-print "third argument     : ", ARG3
-print "fourth argument    : ", ARG4
-print "fifth argument     : ", ARG5
-print "number of arguments: ", ARGC
+# set print "-"
+# print "script name        : ", ARG0
+# print "first argument     : ", ARG1
+# print "second argument    : ", ARG2
+# print "third argument     : ", ARG3
+# print "fourth argument    : ", ARG4
+# print "fifth argument     : ", ARG5
+# print "number of arguments: ", ARGC
 
 TITLE = "Prices from Entsoe for ".ARG2
 UNITS = "Price in ".ARG3."/".ARG4

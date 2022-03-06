@@ -25,11 +25,11 @@ today=$(echo "$inDate" | tr -d '-')
 #
 # pick a random number between 2 and 20
 #
-# delay=$(shuf -i 2-20 -n 1)
+delay=$(shuf -i 2-20 -n 1)
 #
 # get some sleep for the number of minutes
 #
-# sleep ${delay}m
+sleep ${delay}m
 #
 # Gives day-ahead prices
 #
@@ -148,5 +148,5 @@ if [ -z "$4" ]; then
   exit 1
 else
 # plot the data in a diagram, result in "plot.png"
-  gnuplot -c ../plot/plot_prices.gp data-$today.plt $inDate $currency $unit $4
+  gnuplot -c ../plot/plotPrices.gp data-$today.plt $inDate $currency $unit $4
 fi

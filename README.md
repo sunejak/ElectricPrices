@@ -33,10 +33,15 @@ contains the price between 23:00 and 24:00
 }
 
 ```
-Time is shown in seconds since 1 Jan 1970 and date in ISO format. 
-The usage pattern is a crontab like this:
+Time is shown as hour in Norway. 
+The parameters for the script are:
+- Security token
+- Date, any legal value you can feed to the "date" command
+- Norwegian area, like Oslo/Bergen/Trondheim/Tromsø/Kristiansand
 
+The usage pattern is a crontab like this (NB, prices are updated at 14:00):
 
+0 14 * * * 	cd /home/directory/ElectricPrices/src/main/sh; ./getDataFromEntsoe.sh security-token tomorrow Trondheim plot.png > result.json
 
 The project depends on bash scripting, gnuplot, jq and jtm, they are installed with:
 
