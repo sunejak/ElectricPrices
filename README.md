@@ -1,29 +1,48 @@
-# Electric Prices
+# Electric Prices in Europe
 
 ## Introduction
 
-This project shows you how to get the electric prices for your home automation project
+This project shows you how to get the electric prices for your home automation project.
 
-Data for Europe is available from this site: https://transparency.entsoe.eu/usrm/user/myAccountSettings where you have to sign up for a security token.
+Data for Europe is available from this site: 
+https://transparency.entsoe.eu/usrm/user/myAccountSettings 
+where you have to sign up for a security token to get access.
 
-The API itself is decribed here: https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html
+The documentation for the API is here:
+https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html
 
 ## Usage
 
-This project shows how you can let your home automation decide when the price is high or low.
+This project shows how you can let your home automation decide what to do when the electric price is high or low.
+And also how to plot a daily diagram as well, like this:
+
+![price pr hour](/home/ttjsun/2022/ElectricPrices/src/main/sh/plot.png)
 
 The data returned from the API is in XML, and to do fun stuff with it, the data is converted to a JSON data structure.
 
-Like this: 
+Like this, where price is an array where the elements are price at that hour. 
+Example, array element [0] contains the price between 0:00 and 1:00, and element [23]
+contains the price between 23:00 and 24:00
 ```
 {
-	"highHour": 123456,
-	"lowHour": 54321,
-	"date": "2022-03-03",
-	"price": [1.10, 2.15, 3.3, 4, 5, 6, 7, 8, 9, 10, 11],
-	"units": "EUR/MWh"
+"date": "2022-03-06"
+, "units": "EUR/MWH"
+, "maxHour": 23
+, "minHour": 0
+, "price": [13.55,13.75,13.81,13.75,13.81,13.55,13.93,14.03,14.19,14.27,14.25,14.13,13.73,13.64,13.64,13.92,14.07,14.18,14.30,14.38,14.43,14.54,14.65,14.91]
 }
+
 ```
 Time is shown in seconds since 1 Jan 1970 and date in ISO format. 
 The usage pattern is a crontab like this:
+
+
+
+The project depends on bash scripting, gnuplot, jq and jtm, they are installed with:
+
+- sudo apt install curl 
+- sudo apt install gnuplot 
+- sudo apt install jq
+- jtm, download it from here: https://github.com/ldn-softdev/jtm 
+
 
