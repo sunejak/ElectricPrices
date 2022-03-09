@@ -23,7 +23,7 @@ The data returned from the API is in XML, and to do fun stuff with it, the data 
 Like this, where price is an array where the elements are price at that hour. 
 Example, array element [0] contains the price between 0:00 and 1:00, and element [23]
 contains the price between 23:00 and 24:00
-```
+```json
 {
 "date": "2022-03-06"
 , "units": "EUR/MWH"
@@ -41,9 +41,9 @@ The parameters for the script are:
 - Output file for plot (if omitted, no plot is generated)
 
 The usage pattern is a crontab like this (NB, prices are updated at 14:00):
-
+```shell
 0 14 * * * 	cd /home/directory/ElectricPrices/src/main/sh; ./getDataFromEntsoe.sh security-token tomorrow Trondheim plot.png > result.json
-
+```
 The project depends on bash scripting, gnuplot, jq and jtm, they are installed with:
 
 - sudo apt install curl 
