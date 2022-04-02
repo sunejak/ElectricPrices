@@ -29,7 +29,7 @@ delay=$(shuf -i 2-20 -n 1)
 #
 # get some sleep for the number of minutes
 #
-sleep ${delay}m
+# sleep ${delay}m
 #
 # Gives day-ahead prices
 #
