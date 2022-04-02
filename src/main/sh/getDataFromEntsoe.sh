@@ -27,9 +27,9 @@ today=$(echo "$inDate" | tr -d '-')
 #
 delay=$(shuf -i 2-20 -n 1)
 #
-# get some sleep for the number of minutes
+# get some sleep for the number of minutes, no to overload the server.
 #
-# sleep ${delay}m
+sleep ${delay}m
 #
 # Gives day-ahead prices
 #
