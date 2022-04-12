@@ -29,7 +29,7 @@ delay=$(shuf -i 2-20 -n 1)
 #
 # get some sleep for the number of minutes, no to overload the server.
 #
-sleep ${delay}m
+# sleep ${delay}m
 #
 # Gives day-ahead prices
 #
@@ -67,21 +67,32 @@ url=https://transparency.entsoe.eu/api
 # get the data, response is in XML format
 #
 resultUrl="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=$secToken"
-xmlResponse=$(curl -s "$resultUrl")
+
+xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 #
-# did it work?
+# did curl work?
 #
 if [ $? -ne 0 ]; then
   echo "Could not access URL at ${resultUrl}"
   exit 1
 fi
-
+#
+# what is the HTTP response?
+#
+httpCode=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>"))
+#
+# check if it good
+#
+if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
+  echo Maintenance mode? $httpCode
+  exit 1
+fi
+#
+# check if there is a code inside the response (it should not)
+#
 code=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<code>"))
 
-if [ -z "$code" ]; then
-  # successfully fetched data
-  echo "{"
-else
+if [ ! -z "$code" ]; then
   echo Fetching data from $url failed with: "$code"
   exit 1
 fi
