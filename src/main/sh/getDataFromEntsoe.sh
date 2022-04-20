@@ -101,6 +101,8 @@ fi
 #
 jsonResponse=$(echo "$xmlResponse" | ./jtm-linux-64.v2.09)
 
+echo "{"
+
 echo "\"date\"": "\"$inDate\""
 #
 # get currency (EUR) in currency_Unit.name
