@@ -84,7 +84,7 @@ httpCode=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>"))
 # check if it good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
-  echo {"message": "Maintenance mode? $httpCode" }
+  echo {\"message\": \"Maintenance mode? $httpCode\" }
   exit 1
 fi
 #
@@ -93,7 +93,7 @@ fi
 code=$(echo $(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>"))
 
 if [ -n "$code" ]; then
-  echo {"message": "Fetching data from $url failed with: $code"};
+  echo {\"message\": \"Fetching data from $url failed with: $code\"};
   exit 1
 fi
 #
