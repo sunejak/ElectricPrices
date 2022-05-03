@@ -25,9 +25,9 @@ today=$(echo "$inDate" | tr -d '-')
 #
 # pick a random number between 2 and 20
 #
-delay=$(shuf -i 2-20 -n 1)
+delay=$(shuf -i 3-20 -n 1)
 #
-# get some sleep for the number of minutes, no to overload the server.
+# get some sleep for the number of minutes, not to overload the server.
 #
 # sleep ${delay}m
 #
@@ -84,16 +84,16 @@ httpCode=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>"))
 # check if it good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
-  echo Maintenance mode? $httpCode
+  echo {"message": "Maintenance mode? $httpCode" }
   exit 1
 fi
 #
 # check if there is a code inside the response (it should not)
 #
-code=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<code>"))
+code=$(echo $(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>"))
 
-if [ ! -z "$code" ]; then
-  echo Fetching data from $url failed with: "$code"
+if [ -n "$code" ]; then
+  echo {"message": "Fetching data from $url failed with: $code"};
   exit 1
 fi
 #
