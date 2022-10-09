@@ -117,11 +117,25 @@ echo ", \"units\": \"$currency/$unit\""
 
 max=100000
 min=0
+
+rm tmp.tmp
+
 # find max min values
 for i in {2..25}; do
   # get the prices for each hour
   price=$(echo "$jsonResponse" | jq .[1].Publication_MarketDocument[10].TimeSeries[7].Period[$i].Point[1] | sed "s/.amount/Amount/" | jq -r .priceAmount)
   j=$(($i - 2))
+
+# differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
+netcosthigh=0.02175
+netcostlow=0.010875
+
+  if(( $j >= 6 && $j < 22 )); then
+        price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l );
+      else
+        price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l );
+  fi
+
   # find highest price
   if (($(echo "$price > $min" | bc -l))); then
     min=$price
@@ -133,11 +147,17 @@ for i in {2..25}; do
     minIndex=$j
   fi
   priceArray+=$(echo "${price} ")
+
+  echo "${price} " $j >> tmp.tmp
+
 done
+
+sortedHour=$(cat tmp.tmp | sort -nr | cut -d' ' -f3 )
 
 echo ", \"maxHour\"": $maxIndex
 echo ", \"minHour\"": $minIndex
 echo ", \"price\": [$(echo $priceArray | tr ' ' ',')]"
+echo ", \"sortedHour\": [$(echo $sortedHour | tr ' ' ',')]"
 echo "}"
 # color code the data
 m=0

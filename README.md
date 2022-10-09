@@ -40,6 +40,10 @@ The parameters for the script are:
 - Norwegian area, like Oslo/Bergen/Trondheim/Tromsø/Kristiansand
 - Output file for plot (if omitted, no plot is generated)
 
+Since 1 July 2022, there is now differentiated prices on power.
+
+Daytime price 06-22, nighttime 22-06. For Tensio NT ( 21.75 øre/kWh and 10.875 øre/kWh )
+
 The usage pattern is a crontab like this (NB, prices are updated at 14:00):
 ```shell
 0 14 * * * 	cd /home/directory/ElectricPrices/src/main/sh; ./getDataFromEntsoe.sh security-token tomorrow Trondheim plot.png > result.json
