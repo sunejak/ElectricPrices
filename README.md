@@ -55,4 +55,7 @@ The project depends on bash scripting, gnuplot, jq and jtm, they are installed w
 - sudo apt install jq
 - jtm, download it from here: https://github.com/ldn-softdev/jtm 
 
+curl -s https://www.hvakosterstrommen.no/strompris-api is also an alternative to fetch electric prices.
 
+Get today's exchange rate, from Norges Bank
+curl -s "https://data.norges-bank.no/api/data/EXR/B.EUR.NOK.SP?format=sdmx-json&startPeriod=2022-11-27&endPeriod=2022-11-27&locale=no" | jq '.data.dataSets[0].series' | sed "s/0:0:0:0/testing/" | jq .testing.observations | sed 's/"0"/"test"/g' | jq -r .test[0]

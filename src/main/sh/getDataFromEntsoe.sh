@@ -25,7 +25,7 @@ today=$(echo "$inDate" | tr -d '-')
 #
 # pick a random number between 2 and 20
 #
-delay=$(shuf -i 3-20 -n 1)
+# delay=$(shuf -i 3-20 -n 1)
 #
 # get some sleep for the number of minutes, not to overload the server.
 #
@@ -45,7 +45,7 @@ Kristiansand | kristiansand)
 Trondheim | trondheim)
   area="10YNO-3--------J"
   ;;
-Tromsø | tromso)
+Tromsø | tromsø)
   area="10YNO-4--------9"
   ;;
 Bergen | bergen)
@@ -79,21 +79,21 @@ fi
 #
 # what is the HTTP response?
 #
-httpCode=$(echo $(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>"))
+httpCode=$(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>")
 #
 # check if it good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
-  echo {\"message\": \"Maintenance mode? $httpCode\" }
+  echo "{\"message\": \"Maintenance mode? $httpCode\" }"
   exit 1
 fi
 #
 # check if there is a code inside the response (it should not)
 #
-code=$(echo $(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>"))
+code=$(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>")
 
 if [ -n "$code" ]; then
-  echo {\"message\": \"Fetching data from $url failed with: $code\"};
+  echo "{\"message\": \"Fetching data from $url failed with: $code\"}";
   exit 1
 fi
 #
@@ -181,5 +181,5 @@ if [ -z "$4" ]; then
   exit 1
 else
 # plot the data in a diagram, result in "plot.png"
-  gnuplot -c ../plot/plotPrices.gp data-$today.plt $inDate $currency $unit $4
+  gnuplot -c ../plot/plotPrices.gp data-$today.plt $inDate $currency $unit $plotfile
 fi
