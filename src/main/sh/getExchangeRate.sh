@@ -15,7 +15,8 @@ while [ $COUNTER -lt 10 ]; do
   observation=$(echo "$xmlRawData" | xmllint --format - | grep "OBS_VALUE")
   if [[ $observation == *OBS_VALUE* ]]; then
     exchange=$(echo $observation | tr '/' ' ' | cut -d' ' -f3 | cut -d'=' -f2 | tr -d '"')
-    echo ${exchange}
+    currentDate=$(echo $observation | tr '/' ' ' | cut -d' ' -f2 | cut -d'=' -f2 | tr -d '"')
+    echo "{ \"exhangeRate\": ${exchange} , \"date\": \"${currentDate}\" }"
     exit 0
   fi
   (( COUNTER=COUNTER+1 ))
