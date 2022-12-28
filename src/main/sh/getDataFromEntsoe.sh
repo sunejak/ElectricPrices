@@ -73,7 +73,7 @@ xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 # did curl work?
 #
 if [ $? -ne 0 ]; then
-  echo "Could not access URL at ${resultUrl}"
+  echo "{\"message\": \"Could not access URL at ${resultUrl}\"}"
   exit 1
 fi
 #
