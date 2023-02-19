@@ -62,7 +62,7 @@ outD=$area
 pStart=${today}0000
 pEnd=${today}2300
 secToken=$1
-url=https://transparency.entsoe.eu/api
+url=https://web-api.tp.entsoe.eu/api
 #
 # get the data, response is in XML format
 #
