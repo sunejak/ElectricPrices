@@ -99,7 +99,7 @@ fi
 #
 # convert the XML to a JSON array using jtm, you can find it here: https://github.com/ldn-softdev/jtm
 #
-jsonResponse=$(echo "$xmlResponse" | ./jtm-linux-64.v2.09)
+jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
 echo "{"
 
@@ -107,11 +107,11 @@ echo "\"date\"": "\"$inDate\""
 #
 # get currency (EUR) in currency_Unit.name
 #
-currency=$(echo "$jsonResponse" | jq .[1].Publication_MarketDocument[10].TimeSeries[4] | tr -d '.' | jq -r .currency_Unitname)
+currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .currency_Unitname)
 #
-# get units (MWH)
+# get units (MWH) in .price_Measure_Unit.name
 #
-unit=$(echo "$jsonResponse" | jq .[1].Publication_MarketDocument[10].TimeSeries[5] | tr -d '.' | jq -r .price_Measure_Unitname)
+unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .price_Measure_Unitname)
 #
 echo ", \"units\": \"$currency/$unit\""
 
@@ -121,16 +121,15 @@ min=0
 rm tmp.tmp
 
 # find max min values
-for i in {2..25}; do
+for i in {0..23}; do
   # get the prices for each hour
-  price=$(echo "$jsonResponse" | jq .[1].Publication_MarketDocument[10].TimeSeries[7].Period[$i].Point[1] | sed "s/.amount/Amount/" | jq -r .priceAmount)
-  j=$(($i - 2))
+  price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
 
 # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
 netcosthigh=0.02175
 netcostlow=0.010875
 
-  if(( $j >= 6 && $j < 22 )); then
+  if(( $i >= 6 && $i < 22 )); then
         price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l );
       else
         price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l );
@@ -139,16 +138,16 @@ netcostlow=0.010875
   # find highest price
   if (($(echo "$price > $min" | bc -l))); then
     min=$price
-    maxIndex=$j
+    maxIndex=$i
   fi
   # find lowest price
   if (($(echo "$price < $max" | bc -l))); then
     max=$price
-    minIndex=$j
+    minIndex=$i
   fi
   priceArray+=$(echo "${price} ")
 
-  echo "${price} " $j >> tmp.tmp
+  echo "${price} " $i >> tmp.tmp
 
 done
 

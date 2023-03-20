@@ -25,12 +25,14 @@ Example, array element [0] contains the price between 0:00 and 1:00, and element
 contains the price between 23:00 and 24:00
 ```json
 {
-"date": "2022-03-06"
+  "date": "2023-03-20"
 , "units": "EUR/MWH"
-, "maxHour": 23
-, "minHour": 0
-, "price": [13.55,13.75,13.81,13.75,13.81,13.55,13.93,14.03,14.19,14.27,14.25,14.13,13.73,13.64,13.64,13.92,14.07,14.18,14.30,14.38,14.43,14.54,14.65,14.91]
+, "maxHour": 11
+, "minHour": 23
+, "price": [39.28,39.92,42.72,42.49,44.82,46.61,44.10,53.01,53.02,52.87,50.37,53.29,53.01,52.48,52.74,53.27,53.02,53.01,47.97,46.65,46.81,42.85,39.72,37.83]
+, "sortedHour": [11,15,8,16,7,17,12,9,14,13,10,18,20,19,5,4,6,21,2,3,1,22,0,23]
 }
+
 
 ```
 Time is shown as hour in Norway. 
@@ -53,7 +55,7 @@ The project depends on bash scripting, gnuplot, jq and jtm, they are installed w
 - sudo apt install curl 
 - sudo apt install gnuplot 
 - sudo apt install jq
-- jtm, download it from here: https://github.com/ldn-softdev/jtm 
+- sudo pip install yq https://www.howtogeek.com/devops/how-to-convert-xml-to-json-on-the-command-line/
 
 curl -s https://www.hvakosterstrommen.no/strompris-api is also an alternative to fetch electric prices.
 
