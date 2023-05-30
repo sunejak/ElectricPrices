@@ -105,6 +105,13 @@ echo "{"
 
 echo "\"date\"": "\"$inDate\""
 #
+# check how much response you got
+#
+count=$(echo "$jsonResponse" | jq '.Publication_MarketDocument.TimeSeries | length' )
+#
+# if the number is 8, then there is only one day in the response
+if((count == 8)); then
+#
 # get currency (EUR) in currency_Unit.name
 #
 currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .currency_Unitname)
@@ -113,6 +120,14 @@ currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr
 #
 unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .price_Measure_Unitname)
 #
+else
+  currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .currency_Unitname)
+  #
+  # get units (MWH) in .price_Measure_Unit.name
+  #
+  unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .price_Measure_Unitname)
+
+  fi
 echo ", \"units\": \"$currency/$unit\""
 
 max=100000
@@ -123,8 +138,11 @@ rm tmp.tmp
 # find max min values
 for i in {0..23}; do
   # get the prices for each hour
+  if((count == 8)); then
   price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
-
+ else
+   price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
+   fi
 # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
 netcosthigh=0.02175
 netcostlow=0.010875
