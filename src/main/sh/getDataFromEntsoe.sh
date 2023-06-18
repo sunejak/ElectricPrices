@@ -4,12 +4,10 @@ if [ -z "$1" ]; then
   echo "Provide a security token, a date, an area in Norway and a plot output file"
   exit 1
 fi
-
 if [ -z "$2" ]; then
   echo "Provide a date"
   exit 1
 fi
-
 if [ -z "$3" ]; then
   echo "Provide an area in Norway"
   exit 1
@@ -26,9 +24,7 @@ today=$(echo "$inDate" | tr -d '-')
 # pick a random number between 2 and 20
 #
 # delay=$(shuf -i 3-20 -n 1)
-#
 # get some sleep for the number of minutes, not to overload the server.
-#
 # sleep ${delay}m
 #
 # Gives day-ahead prices
@@ -67,13 +63,12 @@ url=https://web-api.tp.entsoe.eu/api
 # get the data, response is in XML format
 #
 resultUrl="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=$secToken"
-
 xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 #
 # did curl work?
 #
 if [ $? -ne 0 ]; then
-  echo "{\"message\": \"Could not access URL at ${resultUrl}\"}"
+  echo "{\"error\": \"Could not access URL at ${resultUrl}\"}"
   exit 1
 fi
 #
@@ -84,7 +79,7 @@ httpCode=$(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>")
 # check if it good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
-  echo "{\"message\": \"Maintenance mode? $httpCode\" }"
+  echo "{\"error\": \"Maintenance mode? $httpCode\" }"
   exit 1
 fi
 #
@@ -93,11 +88,11 @@ fi
 code=$(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>")
 
 if [ -n "$code" ]; then
-  echo "{\"message\": \"Fetching data from $url failed with: $code\"}";
+  echo "{\"error\": \"Fetching data from $url failed with: $code\"}";
   exit 1
 fi
 #
-# convert the XML to a JSON array using jtm, you can find it here: https://github.com/ldn-softdev/jtm
+# convert the XML to a JSON array using xq, first remove the httpCode
 #
 jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
@@ -111,23 +106,22 @@ count=$(echo "$jsonResponse" | jq '.Publication_MarketDocument.TimeSeries | leng
 #
 # if the number is 8, then there is only one day in the response
 if((count == 8)); then
-#
-# get currency (EUR) in currency_Unit.name
-#
-currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .currency_Unitname)
-#
-# get units (MWH) in .price_Measure_Unit.name
-#
-unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .price_Measure_Unitname)
-#
+  #
+  # get currency (EUR) in currency_Unit.name
+  #
+  currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .currency_Unitname)
+  #
+  # get units (MWH) in .price_Measure_Unit.name
+  #
+  unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .price_Measure_Unitname)
+  #
 else
   currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .currency_Unitname)
   #
   # get units (MWH) in .price_Measure_Unit.name
   #
   unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .price_Measure_Unitname)
-
-  fi
+fi
 echo ", \"units\": \"$currency/$unit\""
 
 max=100000
@@ -139,10 +133,10 @@ rm tmp.tmp
 for i in {0..23}; do
   # get the prices for each hour
   if((count == 8)); then
-  price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
- else
-   price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
-   fi
+    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
+  else
+    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
+  fi
 # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
 netcosthigh=0.02175
 netcostlow=0.010875
