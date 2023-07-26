@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 if [ -z "$1" ]; then
-  echo "Provide a security token, a date, an area in Norway and a plot output file"
+  echo "Provide a security token, a date, an area in Norway or Finland and a plot output file"
   exit 1
 fi
 if [ -z "$2" ]; then
@@ -9,7 +9,7 @@ if [ -z "$2" ]; then
   exit 1
 fi
 if [ -z "$3" ]; then
-  echo "Provide an area in Norway"
+  echo "Provide an area in Norway or Finland"
   exit 1
 fi
 plotfile=$4
@@ -46,6 +46,9 @@ Tromsø | tromsø)
   ;;
 Bergen | bergen)
   area="10Y1001A1001A48H"
+  ;;
+Finland | finland)
+  area="10YFI-1--------U"
   ;;
 *)
   echo -n "unknown Norwegian area"
