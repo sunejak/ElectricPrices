@@ -55,7 +55,7 @@ The project depends on bash scripting, gnuplot, jq and jtm, they are installed w
 - sudo apt install curl 
 - sudo apt install gnuplot 
 - sudo apt install jq
-- sudo pip install xq https://www.howtogeek.com/devops/how-to-convert-xml-to-json-on-the-command-line/
+- sudo pip install yq https://www.howtogeek.com/devops/how-to-convert-xml-to-json-on-the-command-line/
 
 curl -s https://www.hvakosterstrommen.no/strompris-api is also an alternative to fetch electric prices.
 
