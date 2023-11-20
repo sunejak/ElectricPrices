@@ -12,10 +12,12 @@ if [ -z "$3" ]; then
   echo "Provide an area in Norway or Finland"
   exit 1
 fi
+name=$3
 plotfile=$4
 #
 inDate=$(date -I --date="$2")
 if [ $? -ne 0 ]; then
+  echo "Not a valid date"
   exit 1
 fi
 
@@ -31,7 +33,7 @@ today=$(echo "$inDate" | tr -d '-')
 #
 dType=A44
 #
-case $3 in
+case $name in
 Oslo | oslo)
   area="10YNO-1--------2"
   ;;
@@ -102,7 +104,7 @@ jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 echo "{"
 
 echo "\"date\"": "\"$inDate\""
-echo "\"area\"": "\"$area\""
+echo "\"area\"": "\"$name\""
 #
 # check how much response you got
 #
@@ -169,8 +171,6 @@ done
 
 sortedHour=$(cat tmp.tmp | sort -nr | cut -d' ' -f3 )
 
-echo ", \"maxHour\"": $maxIndex
-echo ", \"minHour\"": $minIndex
 echo ", \"price\": [$(echo $priceArray | tr ' ' ',')]"
 echo ", \"sortedHour\": [$(echo $sortedHour | tr ' ' ',')]"
 echo "}"
