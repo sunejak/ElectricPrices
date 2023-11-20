@@ -104,7 +104,7 @@ jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 echo "{"
 
 echo "\"date\"": "\"$inDate\""
-echo "\"area\"": "\"$name\""
+echo ",\"area\"": "\"$name\""
 #
 # check how much response you got
 #
@@ -128,7 +128,7 @@ else
   #
   unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .price_Measure_Unitname)
 fi
-echo ", \"units\": \"$currency/$unit\""
+echo ",\"units\": \"$currency/$unit\""
 
 max=100000
 min=0
