@@ -79,7 +79,7 @@ fi
 #
 # what is the HTTP response?
 #
-httpCode=$(echo $xmlResponse | tr ' ' '\n' | grep "<httpCode>")
+httpCode=$(echo "${xmlResponse}" | tr ' ' '\n' | grep "<httpCode>")
 #
 # check if it good
 #
@@ -144,8 +144,8 @@ for i in {0..23}; do
     price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
   fi
 # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
-netcosthigh=0.02175
-netcostlow=0.010875
+netcosthigh=(0.4030/11.7345)
+netcostlow=(0.3068/11.7345)
 
   if(( $i >= 6 && $i < 22 )); then
         price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l );
@@ -171,10 +171,10 @@ done
 
 sortedHour=$(cat tmp.tmp | sort -nr | cut -d' ' -f3 )
 
-echo ", \"price\": [$(echo $priceArray | tr ' ' ',')]"
-echo ", \"sortedHour\": [$(echo $sortedHour | tr ' ' ',')]"
+echo ",\"price\": [$(echo $priceArray | tr ' ' ',')]"
+echo ",\"sortedHour\": [$(echo $sortedHour | tr ' ' ',')]"
 echo "}"
-# color code the data
+# color code the plot data
 m=0
 rm data-$today.plt
 for k in $priceArray; do
