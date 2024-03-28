@@ -24,22 +24,17 @@ Like this, where price is an array where the elements are price at that hour.
 Example, array element [0] contains the price between 0:00 and 1:00, and element [23]
 contains the price between 23:00 and 24:00
 ```json
-{
-  "date": "2023-03-20"
-, "units": "EUR/MWH"
-, "maxHour": 11
-, "minHour": 23
-, "price": [39.28,39.92,42.72,42.49,44.82,46.61,44.10,53.01,53.02,52.87,50.37,53.29,53.01,52.48,52.74,53.27,53.02,53.01,47.97,46.65,46.81,42.85,39.72,37.83]
-, "sortedHour": [11,15,8,16,7,17,12,9,14,13,10,18,20,19,5,4,6,21,2,3,1,22,0,23]
-}
-
-
+{"date":"2024-03-29",
+  "area":"Trondheim",
+  "units":"EUR/MWH",
+  "price":[23.31,22.95,22.68,22.49,22.45,22.37,22.66,23.04,23.3,23.65,23.82,23.62,23.61,23.66,24.19,42.15,39.73,42.35,43.59,45.03,44.95,49.94,51.99,55.01],
+  "sortedHour":[23,22,21,19,20,18,17,15,16,14,10,13,9,11,12,0,8,7,1,2,6,3,4,5]}
 ```
-Time is shown as hour in Norway. 
+Time is shown as hours in Norway. 
 The parameters for the script are:
 - Security token
 - Date, any legal value you can feed to the "date" command
-- Norwegian area, like Oslo/Bergen/Trondheim/Tromsø/Kristiansand
+- Norwegian area, like Oslo/Bergen/Trondheim/Tromsø/Kristiansand or Finland
 - Output file for plot (if omitted, no plot is generated)
 
 Since 1 July 2022, there is now differentiated prices on power.
@@ -48,14 +43,22 @@ Daytime price 06-22, nighttime 22-06. For Tensio NT ( 21.75 øre/kWh and 10.875 
 
 The usage pattern is a crontab like this (NB, prices are updated at 14:00):
 ```shell
-0 14 * * * 	cd /home/directory/ElectricPrices/src/main/sh; ./getDataFromEntsoe.sh security-token tomorrow Trondheim plot.png > result.json
+0 14 * * * 	cd /home/directory/ElectricPrices/src/main/sh; ./getDataFromEntsoe.sh security-token tomorrow Trondheim > result.json
 ```
-The project depends on bash scripting, gnuplot, jq and jtm, they are installed with:
+Then the JSON output can be converted to input for gnuplot
+```shell
+cd /home/directory/ElectricPrices/src/main/sh; ./generatePlotData.sh result.json > result.plt
+```
+And then finally plotted with 
+```shell
+cd /home/directory/ElectricPrices/src/main/sh; gnuplot -c ../plot/plotPrices.gp result.plt 2024-03-29 EUR MWh plot.plot
+```
+The project depends on bash scripting, gnuplot, jq and xq, they are installed with:
 
 - sudo apt install curl 
 - sudo apt install gnuplot 
 - sudo apt install jq
-- sudo pip install yq https://www.howtogeek.com/devops/how-to-convert-xml-to-json-on-the-command-line/
+- sudo pip install xq
 
 curl -s https://www.hvakosterstrommen.no/strompris-api is also an alternative to fetch electric prices.
 

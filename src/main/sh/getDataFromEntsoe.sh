@@ -81,7 +81,7 @@ fi
 #
 httpCode=$(echo "${xmlResponse}" | tr ' ' '\n' | grep "<httpCode>")
 #
-# check if it good
+# check if it is good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
   echo "{\"error\": \"Maintenance mode? $httpCode\" }"
@@ -102,7 +102,6 @@ fi
 jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
 echo "{"
-
 echo "\"date\"": "\"$inDate\""
 echo ",\"area\"": "\"$name\""
 #
@@ -130,12 +129,9 @@ else
 fi
 echo ",\"units\": \"$currency/$unit\""
 
-max=100000
-min=0
+localArray=()
+priceArray=()
 
-rm tmp.tmp
-
-# find max min values
 for i in {0..23}; do
   # get the prices for each hour
   if((count == 8)); then
@@ -152,49 +148,13 @@ netcostlow=(0.3068/11.7345)
       else
         price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l );
   fi
-
-  # find highest price
-  if (($(echo "$price > $min" | bc -l))); then
-    min=$price
-    maxIndex=$i
-  fi
-  # find lowest price
-  if (($(echo "$price < $max" | bc -l))); then
-    max=$price
-    minIndex=$i
-  fi
-  priceArray+=$(echo "${price} ")
-
-  echo "${price} " $i >> tmp.tmp
-
+  priceArray+=("$(echo "${price}")")
+  # create a second array with the hour as well
+  localArray+=("$(echo "${price}":$i)")
 done
+# sort the hours expensive first
+readarray -t sortedArray < <(printf "%s\n" "${localArray[@]}" | sort -nr | cut -d':' -f2)
 
-sortedHour=$(cat tmp.tmp | sort -nr | cut -d' ' -f3 )
-
-echo ",\"price\": [$(echo $priceArray | tr ' ' ',')]"
-echo ",\"sortedHour\": [$(echo $sortedHour | tr ' ' ',')]"
+echo ",\"price\": [$(echo "${priceArray[@]}" | tr ' ' ',')]"
+echo ",\"sortedHour\": [$(echo "${sortedArray[@]}" | tr ' ' ',')]"
 echo "}"
-# color code the plot data
-m=0
-rm data-$today.plt
-for k in $priceArray; do
-  # color the histogram (7 - red, 2 - green)
-  if [ $maxIndex -eq $m ]; then
-    c=7
-  else
-    if [ $minIndex -eq $m ]; then
-      c=2
-    else
-      c=0
-    fi
-  fi
-  echo "$m.5 $k $c" >> data-$today.plt
-  m=$(($m + 1))
-done
-if [ -z "$4" ]; then
-  true
-  exit 1
-else
-# plot the data in a diagram, result in "plot.png"
-  gnuplot -c ../plot/plotPrices.gp data-$today.plt $inDate $currency $unit $plotfile
-fi
