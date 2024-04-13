@@ -1,11 +1,11 @@
 #!/bin/bash
 #
 if [ -z "$1" ]; then
-  echo "Provide a security token, a date, an area in Norway or Finland and a plot output file"
+  echo "Provide a security token, a date, and an area in Norway or Finland"
   exit 1
 fi
 if [ -z "$2" ]; then
-  echo "Provide a date"
+  echo "Provide a valid date"
   exit 1
 fi
 if [ -z "$3" ]; then
@@ -13,11 +13,10 @@ if [ -z "$3" ]; then
   exit 1
 fi
 name=$3
-
 #
 inDate=$(date -I --date="$2")
 if [ $? -ne 0 ]; then
-  echo "Not a valid date"
+  echo echo "{\"date\": \"$inDate\",\"error\": \"Not a valid date: $2\"}"
   exit 1
 fi
 
@@ -53,7 +52,7 @@ Finland | finland)
   area="10YFI-1--------U"
   ;;
 *)
-  echo -n "unknown Norwegian area"
+  echo echo "{\"date\": \"$inDate\",\"error\": \"Unknown area ${name}\"}"
   exit 1
   ;;
 esac
