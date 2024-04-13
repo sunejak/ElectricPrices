@@ -13,7 +13,7 @@ if [ -z "$3" ]; then
   exit 1
 fi
 name=$3
-plotfile=$4
+
 #
 inDate=$(date -I --date="$2")
 if [ $? -ne 0 ]; then
@@ -73,7 +73,7 @@ xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 # did curl work?
 #
 if [ $? -ne 0 ]; then
-  echo "{\"error\": \"Could not access URL at ${resultUrl}\"}"
+  echo "{\"date\": \"$inDate\",\"error\": \"Could not access URL at ${resultUrl}\"}"
   exit 1
 fi
 #
@@ -84,7 +84,7 @@ httpCode=$(echo "${xmlResponse}" | tr ' ' '\n' | grep "<httpCode>")
 # check if it is good
 #
 if [[ $httpCode != "<httpCode>200</httpCode>" ]]; then
-  echo "{\"error\": \"Maintenance mode? $httpCode\" }"
+  echo "{\"date\": \"$inDate\",\"error\": \"Maintenance mode? $httpCode\" }"
   exit 1
 fi
 #
@@ -93,7 +93,7 @@ fi
 code=$(echo "$xmlResponse" | tr ' ' '\n' | grep "<code>")
 
 if [ -n "$code" ]; then
-  echo "{\"error\": \"Fetching data from $url failed with: $code\"}";
+  echo "{\"date\": \"$inDate\",\"error\": \"Fetching data from $url failed with: $code\"}";
   exit 1
 fi
 #
