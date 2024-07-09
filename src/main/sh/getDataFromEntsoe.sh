@@ -66,13 +66,14 @@ url=https://web-api.tp.entsoe.eu/api
 #
 # get the data, response is in XML format
 #
+url2use="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=xxxx";
 resultUrl="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=$secToken"
 xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 #
 # did curl work?
 #
 if [ $? -ne 0 ]; then
-  echo "{\"date\": \"$inDate\",\"error\": \"Could not access URL at ${resultUrl}\"}"
+  echo "{\"date\": \"$inDate\",\"error\": \"Could not access URL at ${url2use}\"}"
   exit 1
 fi
 #
