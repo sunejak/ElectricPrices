@@ -144,9 +144,9 @@ netcosthigh=(0.4030/11.7345)
 netcostlow=(0.3068/11.7345)
 
   if(( $i >= 6 && $i < 22 )); then
-        price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l );
+        price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l | sed "s/-./-0./");
       else
-        price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l );
+        price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l | sed "s/-./-0./");
   fi
   priceArray+=("$(echo "${price}")")
   # create a second array with the hour as well
