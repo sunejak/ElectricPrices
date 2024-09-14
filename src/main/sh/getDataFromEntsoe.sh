@@ -144,17 +144,18 @@ netcosthigh=(0.4030/11.7345)
 netcostlow=(0.3068/11.7345)
 
   if(( $i >= 6 && $i < 22 )); then
-        price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l );
+  # bc does not give you trailing zeroes, so a small fix for small negative numbers 
+        price=$(echo "scale=2; ($price + $netcosthigh)*100.00/100.00" | bc -l | sed "s/-\./-0./");
       else
-        price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l );
+        price=$(echo "scale=2; ($price + $netcostlow)*100.00/100.00" | bc -l | sed "s/-\./-0./");
   fi
   priceArray+=("$(echo "${price}")")
   # create a second array with the hour as well
   localArray+=("$(echo "${price}":$i)")
 done
 # sort the hours expensive first
-readarray -t sortedArray < <(printf "%s\n" "${localArray[@]}" | sed "s/,//" | sed "s/\./,/" | sort -nr | sed "s/,/\./" | cut -d':' -f2)
-
-echo ",\"price\": [$(echo "${priceArray[@]}" | tr ' ' ',')]"
+readarray -t sortedArray < <(printf "%s\n" "${localArray[@]}" | sort -nr | cut -d':' -f2)
+# bc results need to be adjusted for small positive numbers
+echo ",\"price\": [$(echo "${priceArray[@]}" | tr ' ' ',' | sed "s/,\./,0./g")]"
 echo ",\"sortedHour\": [$(echo "${sortedArray[@]}" | tr ' ' ',')]"
 echo "}"
