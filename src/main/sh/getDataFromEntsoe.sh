@@ -114,7 +114,7 @@ jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
 echo "{"
 echo "\"date\"": "\"$inDate\""
-echo ",\"area\"": "\"$area\""
+echo ",\"area\"": "\"$areaInput\""
 #
 # check how much response you got
 #
