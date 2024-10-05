@@ -12,7 +12,7 @@ if [ -z "$3" ]; then
   echo "Provide an area in Norway or Finland"
   exit 1
 fi
-area=$3
+areaInput=$3
 #
 inDate=$(date -I --date="$2")
 if [ $? -ne 0 ]; then
@@ -43,7 +43,7 @@ netcostlow=$5
 #
 dType=A44
 #
-case $area in
+case $areaInput in
 Oslo | oslo)
   area="10YNO-1--------2"
   ;;
@@ -63,7 +63,7 @@ Finland | finland)
   area="10YFI-1--------U"
   ;;
 *)
-  echo echo "{\"date\": \"$inDate\",\"error\": \"Unknown area ${area}\"}"
+  echo echo "{\"date\": \"$inDate\",\"error\": \"Unknown area ${areaInput}\"}"
   exit 1
   ;;
 esac
