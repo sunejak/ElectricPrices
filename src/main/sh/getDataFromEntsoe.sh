@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 if [ -z "$1" ]; then
-  echo "Provide a security token, a date, and an area in Norway or Finland"
+  echo "Provide a security token, a date, and an area in Norway or Finland, and netcosthigh, and netcostlow"
   exit 1
 fi
 if [ -z "$2" ]; then
@@ -12,7 +12,7 @@ if [ -z "$3" ]; then
   echo "Provide an area in Norway or Finland"
   exit 1
 fi
-name=$3
+area=$3
 #
 inDate=$(date -I --date="$2")
 if [ $? -ne 0 ]; then
@@ -21,6 +21,17 @@ if [ $? -ne 0 ]; then
 fi
 
 today=$(echo "$inDate" | tr -d '-')
+
+if [ -z "$4" ]; then
+  echo "Provide net cost high in your area"
+  exit 1
+fi
+netcosthigh=$4
+if [ -z "$5" ]; then
+  echo "Provide net cost low in your area"
+  exit 1
+fi
+netcostlow=$5
 #
 # pick a random number between 2 and 20
 #
@@ -32,7 +43,7 @@ today=$(echo "$inDate" | tr -d '-')
 #
 dType=A44
 #
-case $name in
+case $area in
 Oslo | oslo)
   area="10YNO-1--------2"
   ;;
@@ -52,7 +63,7 @@ Finland | finland)
   area="10YFI-1--------U"
   ;;
 *)
-  echo echo "{\"date\": \"$inDate\",\"error\": \"Unknown area ${name}\"}"
+  echo echo "{\"date\": \"$inDate\",\"error\": \"Unknown area ${area}\"}"
   exit 1
   ;;
 esac
@@ -103,27 +114,27 @@ jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
 echo "{"
 echo "\"date\"": "\"$inDate\""
-echo ",\"area\"": "\"$name\""
+echo ",\"area\"": "\"$area\""
 #
 # check how much response you got
 #
 count=$(echo "$jsonResponse" | jq '.Publication_MarketDocument.TimeSeries | length' )
 #
 # if the number is 8, then there is only one day in the response
-if((count == 8)); then
+if((count == 10)); then
   #
-  # get currency (EUR) in currency_Unit.name
+  # get currency (EUR) in currency_Unit.area
   #
   currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .currency_Unitname)
   #
-  # get units (MWH) in .price_Measure_Unit.name
+  # get units (MWH) in .price_Measure_Unit.area
   #
   unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries | tr -d '.' | jq -r .price_Measure_Unitname)
   #
 else
   currency=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .currency_Unitname)
   #
-  # get units (MWH) in .price_Measure_Unit.name
+  # get units (MWH) in .price_Measure_Unit.area
   #
   unit=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0] | tr -d '.' | jq -r .price_Measure_Unitname)
 fi
@@ -134,14 +145,14 @@ priceArray=()
 
 for i in {0..23}; do
   # get the prices for each hour
-  if((count == 8)); then
-    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
+  if((count == 10)); then
+    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries.Period[0].Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
   else
-    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period.Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
+    price=$(echo "$jsonResponse" | jq .Publication_MarketDocument.TimeSeries[0].Period[0].Point[$i] | sed "s/.amount/Amount/" | jq -r .priceAmount)
   fi
 # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
-netcosthigh=(0.4030/11.7345)
-netcostlow=(0.3068/11.7345)
+# netcosthigh=(0.4030/11.7345)
+# netcostlow=(0.3068/11.7345)
 
   if(( $i >= 6 && $i < 22 )); then
   # bc does not give you trailing zeroes, so a small fix for small negative numbers 
