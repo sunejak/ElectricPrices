@@ -115,6 +115,8 @@ fi
 #
 jsonResponse=$(echo "$xmlResponse" | sed "s#<httpCode>200</httpCode>##g" | xq )
 
+echo ${jsonResponse} > data.json
+
 echo "{"
 echo "\"date\"": "\"$inDate\""
 echo ",\"area\"": "\"$areaInput\""
@@ -123,10 +125,13 @@ echo ",\"area\"": "\"$areaInput\""
 #
 count=$(echo "$jsonResponse" | jq '.Publication_MarketDocument.TimeSeries.Period | length' )
 #
-# echo $count
+echo $count
+count15min=$(echo "$jsonResponse" | jq '.Publication_MarketDocument.TimeSeries.Period.Point | length' )
+#
+echo $count15min
 # echo $jsonResponse > tmp.json
 #
-# if the number is 3, then there is only one day in the response (tomorrow)
+# if the count number is 3, then there is only one day in the response (tomorrow)
   #
   # get currency (EUR) in currency_Unit.area
   #
@@ -140,6 +145,8 @@ echo ",\"units\": \"$currency/$unit\""
 
 localArray=()
 priceArray=()
+
+exit 0
 
 for i in {0..23}; do
   # get the prices for each hour
