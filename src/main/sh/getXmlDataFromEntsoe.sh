@@ -62,11 +62,11 @@ url=https://web-api.tp.entsoe.eu/api
 #
 url2use="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=xxxx";
 resultUrl="$url?documentType=$dType&in_Domain=$inD&out_Domain=$outD&periodStart=$pStart&periodEnd=$pEnd&securityToken=$secToken"
-echo $resultUrl
+# echo $resultUrl
 
 xmlResponse=$(curl -s -w " <httpCode>%{http_code}</httpCode>" "$resultUrl")
 #
-echo $xmlResponse > Response.xml
+# echo $xmlResponse > Response.xml
 #
 # did curl work?
 #
