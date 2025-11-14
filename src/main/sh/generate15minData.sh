@@ -6,12 +6,12 @@ if [ "${1:-}" = "" ]; then
 fi
 
 if [ -z "$2" ]; then
-  echo "Provide a valid offset"
+  echo "Provide a valid offset (24 is no offset)"
   exit 1
 fi
 
 if [ -z "$3" ]; then
-  echo "Provide a area"
+  echo "Provide a area (Trondheim)"
   exit 1
 fi
 
@@ -41,21 +41,21 @@ elements=$(echo "$jsonPrices" | jq '. | length')
 declare -i ptr=0;
 
 # extract the entries from the JSON input array
-while [ $ptr -lt $elements ]
-do
-# hour=$(((ptr / 4) - offset))
-position=$(echo "${jsonPrices}" | jq .[$ptr].position)
-# echo $position
-price15min=$(echo "${jsonPrices}" | jq .[$ptr].price)
-# echo $price
-pos=$((position-1))
-localArray[${pos}]="${price15min} ## $((position-(offset*4)-1))"
-((ptr++))
+while [ $ptr -lt "$elements" ]
+  do
+  # hour=$(((ptr / 4) - offset))
+  position=$(echo "${jsonPrices}" | jq .[$ptr].position)
+  # echo $position
+  price15min=$(echo "${jsonPrices}" | jq .[$ptr].price)
+  # echo $price
+  pos=$((position-1))
+  localArray[${pos}]="${price15min} ## $((position-(offset*4)-1))"
+  ((ptr++))
 done
 
 # fix the empty positions in the array, by copying the previous entry. curve=A03
 for n in {0..191};
-do
+  do
   if [[ -z ${localArray[$n]} ]]; then
     localArray[$n]=${localArray[$((n-1))]}
   fi
@@ -69,6 +69,4 @@ echo ",\"price15Minutes\": [$(echo "${priceArray[@]:0:96}" | tr ' ' ',' | sed "s
 echo ",\"sorted15Minutes\": [$(echo "${sortedArray[@]:0:96}" | tr ' ' ',')]"
 
 echo "}"
-
 exit 0
-
