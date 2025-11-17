@@ -24,6 +24,17 @@ for i in {0..95}; do
   then
     hour=$(( i/4 ))
     var=$(echo "$inputJSON" | jq -c .price15Minutes[$i:$((i+4))] | tr ',' '+' | tr -d '[' | tr -d ']')
+  # differentiate on time (06-22) and (22-06), price needs to be in Euro cents.
+  netcosthigh=(0.3375/11.71)
+  netcostlow=(0.1688/11.71)
+
+  if [[ $areaInput = "Trondheim" ]]; then
+    if(( $hour >= 6 && $hour < 22 )); then
+      var="((${var} ) + 4*${netcosthigh})"
+    else
+      var="((${var} ) + 4*${netcostlow})"
+    fi
+  fi
     calc=$(echo "scale=2; ($var)*100.00/400.00" | bc -l | sed "s/-\./-0./");
     localArray+=("$(echo $hour $calc)")
   fi
