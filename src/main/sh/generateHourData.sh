@@ -30,9 +30,9 @@ for i in {0..95}; do
 
   if [[ $areaInput = "Trondheim" ]]; then
     if(( $hour >= 6 && $hour < 22 )); then
-      var="((${var} ) + 4*${netcosthigh})"
+      var="((${var} ) + 400*${netcosthigh})"
     else
-      var="((${var} ) + 4*${netcostlow})"
+      var="((${var} ) + 400*${netcostlow})"
     fi
   fi
     calc=$(echo "scale=2; ($var)*100.00/400.00" | bc -l | sed "s/-\./-0./");
